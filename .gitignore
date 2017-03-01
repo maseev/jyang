@@ -1,13 +1,2 @@
-# IntelliJ
-out/
-.idea/
 *.iml
-
-# Maven template
-target/
-
-# Java template
-*.class
-
-# Package Files #
-*.jar
+.idea/*

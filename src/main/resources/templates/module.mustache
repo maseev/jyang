@@ -1,0 +1,245 @@
+module {{name}} {
+{{#namespace}}
+    namespace "{{namespace}}";
+{{/namespace}}
+{{#prefix}}
+    prefix "{{prefix}}";
+{{/prefix}}
+{{#revision}}
+    revision "{{date}}" {
+        description "{{description}}";
+    }
+{{/revision}}
+    typedef char {
+        type string {
+            length "1";
+        }
+    }
+    typedef timestamp {
+        type uint32;
+    }
+    typedef double {
+        type decimal64 {
+            fraction-digits 8;
+        }
+    }
+    typedef float {
+        type binary {
+            length "32";
+        }
+    }
+{{#groupings}}
+    grouping {{name}} {
+    {{#description}}
+        description "{{description}}";
+    {{/description}}
+    {{#leafs}}
+        leaf {{name}} {
+            type {{type}};
+        {{#description}}
+            description "{{description}}";
+        {{/description}}
+        }
+    {{/leafs}}
+    {{#containers}}
+        container {{name}} {
+            uses {{type}};
+        {{#description}}
+            description "{{description}}";
+        {{/description}}
+        }
+    {{/containers}}
+    {{#lists}}
+        {{#leafList}}
+        leaf-list {{name}} {
+            type {{type}};
+        {{#description}}
+            description "{{description}}";
+        {{/description}}
+        }
+        {{/leafList}}
+        {{^leafList}}
+        list {{name}} {
+            uses {{type}};
+        {{#description}}
+            description "{{description}}";
+        {{/description}}
+        }
+        {{/leafList}}
+    {{/lists}}
+    {{#maps}}
+        list {{name}} {
+            list entry {
+            {{#key.primitive}}
+                leaf key {
+                    type {{key.type}};
+                }
+            {{/key.primitive}}
+            {{^key.primitive}}
+                container key {
+                    uses {{key.type}};
+                }
+            {{/key.primitive}}
+            {{#value.primitive}}
+                leaf value {
+                    type {{value.type}};
+                }
+            {{/value.primitive}}
+            {{^value.primitive}}
+                container value {
+                    uses {{value.type}};
+                }
+            {{/value.primitive}}
+            }
+        {{#description}}
+            description "{{description}}";
+        {{/description}}
+        }
+    {{/maps}}
+    }
+{{/groupings}}
+{{#rpcs}}
+    rpc {{name}} {
+    {{#input}}
+        input {
+        {{#description}}
+            description "{{description}}";
+        {{/description}}
+        {{#leafs}}
+            leaf {{name}} {
+                type {{type}};
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+        {{/leafs}}
+        {{#containers}}
+            container {{name}} {
+                uses {{type}};
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+        {{/containers}}
+        {{#lists}}
+            {{#leafList}}
+            leaf-list {{name}} {
+                type {{type}};
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+            {{/leafList}}
+            {{^leafList}}
+            list {{name}} {
+                uses {{type}};
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+            {{/leafList}}
+        {{/lists}}
+        {{#maps}}
+            list {{name}} {
+            list entry {
+            {{#key.primitive}}
+                leaf key {
+                    type {{key.type}};
+                }
+            {{/key.primitive}}
+            {{^key.primitive}}
+                container key {
+                    uses {{key.type}};
+                }
+            {{/key.primitive}}
+            {{#value.primitive}}
+                leaf value {
+                    type {{value.type}};
+                }
+            {{/value.primitive}}
+            {{^value.primitive}}
+                container value {
+                    uses {{value.type}};
+                }
+            {{/value.primitive}}
+            }
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+        {{/maps}}
+        }
+        {{/input}}
+        {{#output}}
+        output {
+        {{#description}}
+            description "{{description}}";
+        {{/description}}
+        {{#leafs}}
+            leaf {{name}} {
+                type {{type}};
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+        {{/leafs}}
+        {{#containers}}
+            container {{name}} {
+                uses {{type}};
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+        {{/containers}}
+        {{#lists}}
+            {{#leafList}}
+            leaf-list {{name}} {
+                type {{type}};
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+            {{/leafList}}
+            {{^leafList}}
+            list {{name}} {
+                uses {{type}};
+            {{#description}}
+                description "{{description}}";
+            {{/description}}
+            }
+            {{/leafList}}
+        {{/lists}}
+        {{#maps}}
+            list {{name}} {
+                list entry {
+                {{#key.primitive}}
+                    leaf key {
+                        type {{key.type}};
+                    }
+                {{/key.primitive}}
+                {{^key.primitive}}
+                    container key {
+                        uses {{key.type}};
+                    }
+                {{/key.primitive}}
+                {{#value.primitive}}
+                    leaf value {
+                        type {{value.type}};
+                    }
+                {{/value.primitive}}
+                {{^value.primitive}}
+                    container value {
+                        uses {{value.type}};
+                    }
+                {{/value.primitive}}
+                }
+                {{#description}}
+                    description "{{description}}";
+                {{/description}}
+            }
+        {{/maps}}
+        }
+        {{/output}}
+    }
+{{/rpcs}}
+}

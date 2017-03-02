@@ -25,9 +25,28 @@ import io.github.maseev.jyang.model.YANGMap;
 import io.github.maseev.jyang.util.AtomicTypeUtil;
 import io.github.maseev.jyang.util.NetconfUtil;
 import io.github.maseev.jyang.util.XmlUtil;
-import javafx.util.Pair;
 
 public class Translator {
+
+  public static class Pair {
+
+    private final List<Grouping> groupings;
+
+    private final List<RPC> rpcs;
+
+    public Pair(List<Grouping> groupings, List<RPC> rpcs) {
+      this.groupings = groupings;
+      this.rpcs = rpcs;
+    }
+
+    public List<Grouping> getGroupings() {
+      return groupings;
+    }
+
+    public List<RPC> getRpcs() {
+      return rpcs;
+    }
+  }
 
   private final Map<String, Class<?>> endpoints;
 
@@ -41,7 +60,7 @@ public class Translator {
     groupings = new HashMap<>();
   }
 
-  public Pair<List<Grouping>, List<RPC>> translateEndpoint(final Class<?> endpoint) {
+  public Pair translateEndpoint(final Class<?> endpoint) {
     validate(endpoint);
 
     Set<Method> netconfProcedures = getProcedures(endpoint);
@@ -75,35 +94,7 @@ public class Translator {
       }
     }
 
-    return new Pair<>(rpcGroupings, rpcs);
-  }
-
-  private static List<Class<?>> getEntityClasses(List<Type> types) {
-    List<Class<?>> classes = new ArrayList<>(types.size());
-
-    for (Type type : types) {
-      Class<?> clazz = type instanceof ParameterizedType ?
-        (Class<?>) ((ParameterizedType) type).getRawType() : (Class<?>) type;
-
-      if (Collection.class.isAssignableFrom(clazz)) {
-        ParameterizedType parameterizedType = (ParameterizedType) type;
-        Class<?> genericClass = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-
-        classes.addAll(getEntityClasses(Collections.singletonList(genericClass)));
-      } else if (Map.class.isAssignableFrom(clazz)) {
-        ParameterizedType parameterizedType = (ParameterizedType) type;
-        Class<?> keyClass = (Class<?>) parameterizedType.getActualTypeArguments()[0];
-        Class<?> valueClass = (Class<?>) parameterizedType.getActualTypeArguments()[1];
-
-        classes.addAll(getEntityClasses(Arrays.asList(keyClass, valueClass)));
-      } else if (clazz.isArray()) {
-        classes.addAll(getEntityClasses(Collections.singletonList(clazz.getComponentType())));
-      } else if (!AtomicTypeUtil.isAtomic(clazz)) {
-        classes.add(clazz);
-      }
-    }
-
-    return classes;
+    return new Pair(rpcGroupings, rpcs);
   }
 
   public Grouping translateGrouping(final Class<?> clazz) {
@@ -133,6 +124,34 @@ public class Translator {
     }
 
     endpoints.put(endpointName, endpoint);
+  }
+
+  private static List<Class<?>> getEntityClasses(List<Type> types) {
+    List<Class<?>> classes = new ArrayList<>(types.size());
+
+    for (Type type : types) {
+      Class<?> clazz = type instanceof ParameterizedType ?
+        (Class<?>) ((ParameterizedType) type).getRawType() : (Class<?>) type;
+
+      if (Collection.class.isAssignableFrom(clazz)) {
+        ParameterizedType parameterizedType = (ParameterizedType) type;
+        Class<?> genericClass = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+
+        classes.addAll(getEntityClasses(Collections.singletonList(genericClass)));
+      } else if (Map.class.isAssignableFrom(clazz)) {
+        ParameterizedType parameterizedType = (ParameterizedType) type;
+        Class<?> keyClass = (Class<?>) parameterizedType.getActualTypeArguments()[0];
+        Class<?> valueClass = (Class<?>) parameterizedType.getActualTypeArguments()[1];
+
+        classes.addAll(getEntityClasses(Arrays.asList(keyClass, valueClass)));
+      } else if (clazz.isArray()) {
+        classes.addAll(getEntityClasses(Collections.singletonList(clazz.getComponentType())));
+      } else if (!AtomicTypeUtil.isAtomic(clazz)) {
+        classes.add(clazz);
+      }
+    }
+
+    return classes;
   }
 
   private Set<Method> getProcedures(final Class<?> endpoint) {

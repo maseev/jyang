@@ -15,6 +15,7 @@ import java.util.Map;
 import io.github.maseev.jyang.Translator.Pair;
 import io.github.maseev.jyang.annotation.NetconfEndpoint;
 import io.github.maseev.jyang.annotation.NetconfProcedure;
+import io.github.maseev.jyang.dto.Entity;
 import io.github.maseev.jyang.dto.PlainDTO;
 import io.github.maseev.jyang.dto.PlainEntity;
 import io.github.maseev.jyang.model.Container;
@@ -327,6 +328,30 @@ public class RPCTranslationTest {
     Grouping expectedOutput = new Grouping("");
     expectedOutput.getContainers().add(new Container("PlainEntity", "PlainEntity"));
     RPC expectedRpc = new RPC("Endpoint.test", "", expectedInput, expectedOutput);
+
+    assertThat(rpc, is(equalTo(expectedRpc)));
+  }
+
+  @Test
+  public void containersShouldPointToTheRightEntityClass() {
+    @NetconfEndpoint
+    class Endpoint {
+
+      @NetconfProcedure
+      public Entity test() {
+        throw new UnsupportedOperationException();
+      }
+    }
+
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
+
+    assertEquals(1, rpcs.size());
+
+    RPC rpc = rpcs.get(0);
+
+    Grouping expectedOutput = new Grouping("");
+    expectedOutput.getContainers().add(new Container("DtoEntity", "DtoEntity"));
+    RPC expectedRpc = new RPC("Endpoint.test", "", null, expectedOutput);
 
     assertThat(rpc, is(equalTo(expectedRpc)));
   }

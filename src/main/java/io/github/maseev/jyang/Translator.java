@@ -98,22 +98,28 @@ public class Translator {
   }
 
   public Grouping translateGrouping(final Class<?> clazz) {
-    if (clazz.isAnnotationPresent(MapsTo.class)) {
-      MapsTo annotation = clazz.getDeclaredAnnotation(MapsTo.class);
+    Class<?> actualType = getActualType(clazz);
 
-      return translateGrouping(annotation.value());
-    }
+    Grouping grouping = new Grouping(XmlUtil.getName(actualType));
 
-    Grouping grouping = new Grouping(XmlUtil.getName(clazz));
-
-    for (Field field : clazz.getDeclaredFields()) {
+    for (Field field : actualType.getDeclaredFields()) {
       processType(field.getGenericType(), XmlUtil.getName(field), grouping);
     }
 
     return grouping;
   }
 
-  private void validate(Class<?> endpoint) {
+  private static Class<?> getActualType(final Class<?> clazz) {
+    if (clazz.isAnnotationPresent(MapsTo.class)) {
+      MapsTo annotation = clazz.getDeclaredAnnotation(MapsTo.class);
+
+      return getActualType(annotation.value());
+    }
+
+    return clazz;
+  }
+
+  private void validate(final Class<?> endpoint) {
     String endpointName = NetconfUtil.getName(endpoint);
 
     if (endpoints.containsKey(endpointName)) {
@@ -126,7 +132,7 @@ public class Translator {
     endpoints.put(endpointName, endpoint);
   }
 
-  private static List<Class<?>> getEntityClasses(List<Type> types) {
+  private static List<Class<?>> getEntityClasses(final List<Type> types) {
     List<Class<?>> classes = new ArrayList<>(types.size());
 
     for (Type type : types) {
@@ -168,7 +174,7 @@ public class Translator {
     return netconfProcedures;
   }
 
-  private void validate(Method method) {
+  private void validate(final Method method) {
     String procedureName = NetconfUtil.getName(method);
 
     if (procedures.containsKey(procedureName)) {
@@ -225,7 +231,9 @@ public class Translator {
 
       grouping.getMaps().add(new YANGMap(entityName, keyClass, valueClass));
     } else {
-      grouping.getContainers().add(new Container(entityName, XmlUtil.getName(clazz)));
+      Class<?> actualType = getActualType(clazz);
+      String actualName = XmlUtil.getName(actualType);
+      grouping.getContainers().add(new Container(actualName, actualName));
     }
   }
 

@@ -2,6 +2,7 @@ package io.github.maseev.jyang;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -99,11 +100,14 @@ public class Translator {
 
   public Grouping translateGrouping(final Class<?> clazz) {
     Class<?> actualType = getActualType(clazz);
-
     Grouping grouping = new Grouping(XmlUtil.getName(actualType));
 
     for (Field field : actualType.getDeclaredFields()) {
-      processType(field.getGenericType(), XmlUtil.getName(field), grouping);
+      int modifiers = field.getModifiers();
+
+      if (!Modifier.isStatic(modifiers) && !Modifier.isTransient(modifiers)) {
+        processType(field.getGenericType(), XmlUtil.getName(field), grouping);
+      }
     }
 
     return grouping;

@@ -56,7 +56,6 @@ public class User {
   // constructors, getters, setters ...
 }
 
-// ServiceProcedure.java
 @NetconfEndpoint("users")
 public class UserEndpoint {
 

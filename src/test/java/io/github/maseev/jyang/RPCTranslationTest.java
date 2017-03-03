@@ -12,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import io.github.maseev.jyang.Translator.Pair;
 import io.github.maseev.jyang.annotation.NetconfEndpoint;
 import io.github.maseev.jyang.annotation.NetconfProcedure;
 import io.github.maseev.jyang.dto.PlainDTO;
@@ -25,7 +26,6 @@ import io.github.maseev.jyang.model.Revision;
 import io.github.maseev.jyang.model.YANGCollection;
 import io.github.maseev.jyang.model.YANGMap;
 import io.github.maseev.jyang.util.TemplateUtil;
-import javafx.util.Pair;
 
 public class RPCTranslationTest {
 
@@ -35,7 +35,7 @@ public class RPCTranslationTest {
     class Endpoint {
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertThat(rpcs, is(Collections.emptyList()));
   }
@@ -64,7 +64,7 @@ public class RPCTranslationTest {
       }
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertThat(rpcs.size(), is(equalTo(1)));
   }
@@ -83,7 +83,7 @@ public class RPCTranslationTest {
       }
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertEquals(1, rpcs.size());
 
@@ -104,7 +104,7 @@ public class RPCTranslationTest {
       }
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertThat(rpcs.size(), is(equalTo(1)));
 
@@ -159,7 +159,7 @@ public class RPCTranslationTest {
       }
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertEquals(1, rpcs.size());
 
@@ -185,8 +185,8 @@ public class RPCTranslationTest {
       }
     }
 
-    Pair<List<Grouping>, List<RPC>> pair = new Translator().translateEndpoint(Endpoint.class);
-    List<RPC> rpcs = pair.getValue();
+    Pair pair = new Translator().translateEndpoint(Endpoint.class);
+    List<RPC> rpcs = pair.getRpcs();
 
     assertEquals(1, rpcs.size());
 
@@ -199,7 +199,7 @@ public class RPCTranslationTest {
     RPC expectedRpc = new RPC("Endpoint.test", "", expectedInput, expectedOutput);
 
     assertThat(rpc, is(equalTo(expectedRpc)));
-    assertThat(pair.getKey().size(), is(equalTo(1)));
+    assertThat(pair.getGroupings().size(), is(equalTo(1)));
   }
 
   @Test
@@ -213,7 +213,7 @@ public class RPCTranslationTest {
       }
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertEquals(1, rpcs.size());
 
@@ -239,7 +239,7 @@ public class RPCTranslationTest {
       }
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertEquals(1, rpcs.size());
 
@@ -265,7 +265,7 @@ public class RPCTranslationTest {
       }
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertEquals(1, rpcs.size());
 
@@ -291,7 +291,7 @@ public class RPCTranslationTest {
       }
     }
 
-    Pair<List<Grouping>, List<RPC>> pair = new Translator().translateEndpoint(Endpoint.class);
+    Pair pair = new Translator().translateEndpoint(Endpoint.class);
     Module module =
       new Module("test",
         "test description",
@@ -299,8 +299,8 @@ public class RPCTranslationTest {
         "pref",
         new Revision(new Date(),"revision description"));
 
-    module.getGroupings().addAll(pair.getKey());
-    module.getRpcs().addAll(pair.getValue());
+    module.getGroupings().addAll(pair.getGroupings());
+    module.getRpcs().addAll(pair.getRpcs());
 
     TemplateUtil.transform(module, "templates/module.mustache");
   }
@@ -316,7 +316,7 @@ public class RPCTranslationTest {
       }
     }
 
-    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getValue();
+    List<RPC> rpcs = new Translator().translateEndpoint(Endpoint.class).getRpcs();
 
     assertEquals(1, rpcs.size());
 

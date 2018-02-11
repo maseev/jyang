@@ -136,7 +136,3 @@ module user {
     }
 }
 ```
-
-How to contribute
----------------
-Found a bug or have an idea how to improve this project? Don't hesitate to open a new issue in the issue tracker or send a PR. I :heart: PRs.
